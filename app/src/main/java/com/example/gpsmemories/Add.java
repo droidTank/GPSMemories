@@ -232,6 +232,7 @@ public class Add extends AppCompatActivity {
             }else if(requestCode== Select_File){
 
                 Uri SelectedImageUri = data.getData();
+
                 imageView.setImageURI(SelectedImageUri);
             }
 

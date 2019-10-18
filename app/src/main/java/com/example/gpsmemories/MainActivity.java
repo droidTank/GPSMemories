@@ -2,6 +2,8 @@ package com.example.gpsmemories;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.room.Room;
@@ -50,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public static MemoryDatabase memoryDatabase;
 
+
+    private String CHANNEL_ID="GPSMemories";
 
 
 
@@ -123,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
 
                 //move map camera
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11));
+
 
 
 
@@ -135,31 +139,40 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 List <Memory>  memories =  MainActivity.memoryDatabase.memoryDao().getAll();
 
-                for (Memory memory : memories){
+                for (Memory memory : memories) {
 
                     //
-                    latLng = new LatLng(memory.getLatitude(),memory.getLongitude());
+                    LatLng latLngo = new LatLng(memory.getLatitude(), memory.getLongitude());
                     markerOptions = new MarkerOptions();
-                    markerOptions.position(latLng);
-                    markerOptions.title(memory.getTitle()+ "    Memory's time : "+ memory.getTime());
+                    markerOptions.position(latLngo);
+                    markerOptions.title(memory.getTitle() + "    Memory's time : " + memory.getTime());
                     //markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
                     markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker));
                     mCurrLocationMarker = mGoogleMap.addMarker(markerOptions);
-                    mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11));
+                    mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngo, 11));
+
+
+
+
+                    if (Math.ceil(latLngo.latitude) == Math.ceil(latLng.latitude)) {
+
+                        NotificationCompat.Builder notification = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
+                                .setContentTitle("You have memory here")
+                                .setSmallIcon(R.drawable.ic_marker)
+                                .setStyle(new NotificationCompat.BigTextStyle()
+                                        .bigText("It's "+memory.getTitle() +" on "+ memory.getTime()));
+                        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(MainActivity.this);
+                        int notificationId = (int) (System.currentTimeMillis() / 4);
+                        notificationManager.notify(notificationId, notification.build());
+
+
+                    }
 
 
                 }
 
 
-
-
-
-
-
-
-
-
-
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11));
             }
         }
     };

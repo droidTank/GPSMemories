@@ -82,9 +82,10 @@ public class MemoriesAdapter extends RecyclerView.Adapter<MemoriesAdapter.Viewho
 
         if(memorylist.getImage()!=null){
 
-
             holder.imageView.setVisibility(View.VISIBLE);
 
+        }else{
+            holder.imageView.setVisibility(View.GONE);
         }
 
 

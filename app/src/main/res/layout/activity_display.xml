@@ -4,11 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/googlemap"
     tools:context=".Display">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         tools:ignore="MissingConstraints"
         android:orientation="vertical"
         >
