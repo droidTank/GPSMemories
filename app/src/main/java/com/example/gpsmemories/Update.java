@@ -4,8 +4,10 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -42,6 +44,7 @@ public class Update extends AppCompatActivity {
 
     public static MemoryDatabase memoryDatabase;
 
+    @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +87,10 @@ public class Update extends AppCompatActivity {
 
 
 
+
+
+
+
         updateNote = findViewById(R.id.updateNote);
 
         cameraiconupdate=findViewById(R.id.cameraiconupdate);
@@ -109,6 +116,8 @@ public class Update extends AppCompatActivity {
                 imageViewUpdate.setVisibility(View.GONE);
             }
         });
+
+
 
 
 
@@ -234,9 +243,12 @@ public class Update extends AppCompatActivity {
     public void onActivityResult(int requestCode,int resultCode, Intent data) {
 
 
+
+
         super.onActivityResult(requestCode, resultCode, data);
 
         if(resultCode== Activity.RESULT_OK){
+
 
             if(requestCode== Request_Camera){
 
@@ -245,14 +257,42 @@ public class Update extends AppCompatActivity {
                 final Bitmap bitmap = (Bitmap) bundle.get("data");
                 imageViewUpdate.setImageBitmap(bitmap);
 
+
             }else if(requestCode== Select_File){
 
                 Uri SelectedImageUri = data.getData();
+
                 imageViewUpdate.setImageURI(SelectedImageUri);
+
+
+
+
+
             }
 
 
         }
+
+
+
+        if(imageViewUpdate.getDrawable()!=null){
+
+
+            Bitmap bitmap = ((BitmapDrawable) imageViewUpdate.getDrawable()).getBitmap();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            if(bitmap !=null){
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                imageInByte = baos.toByteArray();
+                imageViewUpdate.setImageBitmap(bitmap);
+                deletecameraiconupdate.setVisibility(View.VISIBLE);
+            }
+
+
+
+        }
+
+
+
     }
 
 }

@@ -6,6 +6,7 @@ import androidx.room.Room;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -217,6 +218,10 @@ public class Add extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode,int resultCode, Intent data) {
 
+        final ProgressDialog progressDialog;
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Uploading");
+        progressDialog.show();
 
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -228,12 +233,15 @@ public class Add extends AppCompatActivity {
                 Bundle bundle = data.getExtras();
                 final Bitmap bitmap = (Bitmap) bundle.get("data");
                 imageView.setImageBitmap(bitmap);
+                progressDialog.dismiss();
 
             }else if(requestCode== Select_File){
 
                 Uri SelectedImageUri = data.getData();
 
                 imageView.setImageURI(SelectedImageUri);
+
+                progressDialog.dismiss();
             }
 
 
