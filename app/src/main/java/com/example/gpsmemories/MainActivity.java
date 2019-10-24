@@ -10,9 +10,12 @@ import androidx.room.Room;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -50,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     FusedLocationProviderClient mFusedLocationClient;
 
 
+
     public static MemoryDatabase memoryDatabase;
 
 
@@ -67,6 +71,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
+
+
+
+
+
+
+
+
 
 //////////////////////////
 
@@ -156,9 +168,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     if (Math.ceil(latLngo.latitude) == Math.ceil(latLng.latitude)) {
 
+
+
+
+// Create an Intent for the activity you want to start
+                        Intent resultIntent = new Intent(MainActivity.this,Show.class);
+// Create the TaskStackBuilder and add the intent, which inflates the back stack
+                        TaskStackBuilder stackBuilder = TaskStackBuilder.create(MainActivity.this);
+                        stackBuilder.addNextIntentWithParentStack(resultIntent);
+// Get the PendingIntent containing the entire back stack
+                        final PendingIntent contentIntent =
+                                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
                         NotificationCompat.Builder notification = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
                                 .setContentTitle("You have memory here")
+                                .setLargeIcon(BitmapFactory.decodeResource(MainActivity.this.getResources(),
+                                        R.mipmap.ic_launcher))
                                 .setSmallIcon(R.drawable.ic_marker)
+                                .setAutoCancel(true)
+                                .setContentIntent(contentIntent)
                                 .setStyle(new NotificationCompat.BigTextStyle()
                                         .bigText("It's "+memory.getTitle() +" on "+ memory.getTime()));
                         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(MainActivity.this);
