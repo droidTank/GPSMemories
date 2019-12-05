@@ -9,17 +9,24 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.room.Room;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -41,6 +48,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -177,22 +185,44 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         TaskStackBuilder stackBuilder = TaskStackBuilder.create(MainActivity.this);
                         stackBuilder.addNextIntentWithParentStack(resultIntent);
 // Get the PendingIntent containing the entire back stack
-                        final PendingIntent contentIntent =
-                                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                        NotificationCompat.Builder notification = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
-                                .setContentTitle("You have memory here")
-                                .setLargeIcon(BitmapFactory.decodeResource(MainActivity.this.getResources(),
-                                        R.mipmap.ic_launcher))
+
+                        Intent intent;
+
+
+                        intent = new Intent(getApplicationContext(), Display.class);
+                        intent.putExtra("Title",memory.getTitle());
+                        intent.putExtra("Description",memory.getDescription());
+                        intent.putExtra("Time",memory.getTime());
+                        intent.putExtra("Image",memory.getImage());
+
+
+
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),0,intent,PendingIntent.FLAG_ONE_SHOT);
+
+                        Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
                                 .setSmallIcon(R.drawable.ic_marker)
+                                .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(),
+                                        R.mipmap.ic_launcher))
+                                .setContentTitle("You have a memory here")
+                                .setContentText("Have a look to bring memories back")
                                 .setAutoCancel(true)
-                                .setContentIntent(contentIntent)
-                                .setStyle(new NotificationCompat.BigTextStyle()
-                                        .bigText("It's "+memory.getTitle() +" on "+ memory.getTime()));
-                        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(MainActivity.this);
-                        int notificationId = (int) (System.currentTimeMillis() / 4);
-                        notificationManager.notify(notificationId, notification.build());
+                                .setSound(defaultSound)
+                                .setContentIntent(pendingIntent);
 
+                        NotificationManager noti = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+
+
+
+                        int m = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+
+                        assert noti != null;
+                        noti.notify(m,builder.build());
 
                     }
 
